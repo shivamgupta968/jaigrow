@@ -1,0 +1,752 @@
+﻿/* JaiGrow - modern quick-commerce design */
+:root {
+  --jg-green: #14532d;
+  --jg-dark: #123b27;
+  --jg-lime: #d9f99d;
+  --jg-yellow: #facc15;
+  --jg-bg: #f7f9f4;
+  --jg-muted: #647568;
+}
+
+body {
+  background: var(--jg-bg);
+  color: #183b29;
+}
+
+.announcement {
+  background: var(--jg-green);
+  color: white;
+  padding: 9px 12px;
+  font-size: 11px;
+  letter-spacing: .7px;
+  font-weight: 700;
+}
+
+.header {
+  height: 76px;
+  padding: 0 5%;
+  box-shadow: 0 2px 12px #183b2910;
+}
+
+.brand {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 800;
+  letter-spacing: -.8px;
+}
+
+.brand-icon {
+  background: #e7f5df;
+  color: var(--jg-green);
+}
+
+.nav {
+  font-weight: 600;
+}
+
+.header-actions {
+  gap: 12px;
+}
+
+.cart-button {
+  background: var(--jg-green);
+  color: white;
+  border-radius: 9px;
+  padding: 11px 14px;
+  font-weight: 700;
+}
+
+.cart-button span {
+  background: var(--jg-yellow);
+  color: #183b29;
+}
+
+.login-button {
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.hero {
+  min-height: 410px;
+  padding: 48px 7%;
+  background: linear-gradient(115deg, #e5f5d9, #f8f8df);
+  gap: 35px;
+}
+
+.hero h1 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(42px, 5.5vw, 68px);
+  font-weight: 800;
+  letter-spacing: -2px;
+}
+
+.hero h1 em {
+  color: #398044;
+}
+
+.hero-content > p {
+  max-width: 450px;
+  color: #526b55;
+}
+
+.hero-image {
+  height: 330px;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px #234a251c;
+}
+
+.image-label {
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.primary-button {
+  background: var(--jg-green);
+  border-radius: 9px;
+  font-weight: 700;
+}
+
+.benefits {
+  padding: 23px 7%;
+  box-shadow: 0 4px 18px #183b2908;
+}
+
+.benefits svg {
+  color: #398044;
+}
+
+.section {
+  padding: 65px 7%;
+}
+
+.section-heading h2,
+.about-section h2,
+.contact-section h2 {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 800;
+  letter-spacing: -.8px;
+}
+
+.category-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.category-card {
+  position: relative;
+  min-height: 145px;
+  border-radius: 14px;
+  border: 1px solid #e7eddf;
+  background: white;
+  padding: 18px;
+  box-shadow: 0 3px 12px #183b2908;
+  transition: .2s ease;
+}
+
+.category-card:hover {
+  background: #eaf6e4;
+  color: var(--jg-green);
+  transform: translateY(-4px);
+}
+
+.category-number {
+  color: #7a9b65;
+  font-weight: 800;
+}
+
+.category-card h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  margin-top: 25px;
+}
+
+.category-card:nth-child(1)::before { content: '🌱'; }
+.category-card:nth-child(2)::before { content: '🌾'; }
+.category-card:nth-child(3)::before { content: '🛡️'; }
+.category-card:nth-child(4)::before { content: '🍃'; }
+.category-card:nth-child(5)::before { content: '🚜'; }
+
+.category-card::before {
+  position: absolute;
+  top: 14px;
+  right: 15px;
+  font-size: 24px;
+}
+
+.products-section {
+  background: #f4f7ef;
+}
+
+.product-tools {
+  position: relative;
+  align-items: center;
+}
+
+.search-box {
+  min-width: min(400px, 100%);
+  min-height: 48px;
+  border: 1px solid #dce6d7;
+  border-radius: 11px;
+  box-shadow: 0 3px 12px #183b2908;
+}
+
+.search-box:focus-within {
+  border-color: #398044;
+  box-shadow: 0 0 0 3px #39804418;
+}
+
+.search-box input {
+  font-size: 13px;
+}
+
+.filter {
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.filter.active {
+  background: var(--jg-green);
+}
+
+.product-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.product-card {
+  border: 1px solid #e9eee5;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 3px 15px #183b2909;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 25px #183b2915;
+}
+
+.product-image {
+  height: 205px;
+  background: #edf4e8;
+}
+
+.product-tag {
+  border-radius: 6px;
+  font-weight: 700;
+  letter-spacing: .3px;
+}
+
+.wishlist {
+  box-shadow: 0 2px 8px #00000012;
+}
+
+.product-info {
+  padding: 16px;
+}
+
+.product-info h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  color: #183b29;
+}
+
+.product-info p {
+  font-size: 12px;
+  min-height: 38px;
+}
+
+.price-line b {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.add-button {
+  background: #e8f5e3;
+  color: var(--jg-green);
+  border: 1px solid #b8d9ad;
+  border-radius: 8px;
+  padding: 11px;
+  font-weight: 800;
+}
+
+.add-button:hover {
+  background: var(--jg-green);
+  color: white;
+}
+
+.about-section {
+  background: white;
+}
+
+.about-mark {
+  background: #e8f5e3;
+  color: var(--jg-green);
+}
+
+.contact-section {
+  background: #e8f5e3;
+}
+
+.footer {
+  background: #123b27;
+}
+
+.floating-whatsapp {
+  border-radius: 12px;
+  font-weight: 800;
+}
+
+.cart-drawer {
+  border-radius: 16px 0 0 16px;
+}
+
+.checkout-button {
+  border-radius: 9px;
+  font-weight: 800;
+}
+
+@media(max-width: 900px) {
+  .category-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media(max-width: 650px) {
+  .header {
+    padding: 0 4%;
+    height: 68px;
+  }
+  .brand {
+    font-size: 21px;
+  }
+  .header-actions {
+    gap: 8px;
+  }
+  .hero {
+    padding: 35px 6%;
+    gap: 24px;
+  }
+  .hero h1 {
+    font-size: 46px;
+  }
+  .hero-image {
+    height: 225px;
+    border-radius: 15px;
+  }
+  .benefits {
+    padding: 22px 7%;
+  }
+  .section {
+    padding: 48px 5%;
+  }
+  .category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .category-card {
+    min-height: 120px;
+    padding: 14px;
+  }
+  .category-card h3 {
+    font-size: 14px;
+    margin-top: 28px;
+  }
+  .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .product-image {
+    height: 145px;
+  }
+  .product-info {
+    padding: 11px;
+  }
+  .product-info h3 {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .product-info p {
+    font-size: 10px;
+  }
+  .add-button {
+    font-size: 11px;
+    padding: 10px 5px;
+  }
+  .price-line b {
+    font-size: 17px;
+  }
+  .floating-whatsapp {
+    right: 12px;
+    bottom: 12px;
+    padding: 11px 13px;
+  }
+}
+
+@media(max-width: 370px) {
+  .language {
+    padding: 8px;
+  }
+  .login-button {
+    padding: 8px 9px;
+  }
+  .product-grid {
+    gap: 8px;
+  }
+}
+
+/* JaiGrow checkout and order confirmation */
+.header-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  color: #16834b;
+  background: #e8f5e3;
+  border: 1px solid #c8e4c0;
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+.header-whatsapp:hover {
+  background: #d8efcf;
+}
+
+.whatsapp-enquiry-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 13px;
+  color: #16834b;
+  background: white;
+  border: 1px solid #b8d9ad;
+  border-radius: 9px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.checkout-button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.checkout-hint {
+  display: block;
+  margin-top: 8px;
+  color: #98651e;
+  line-height: 1.5;
+}
+
+.checkout-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  overflow-y: auto;
+  background: #102719a8;
+  backdrop-filter: blur(5px);
+}
+
+.checkout-panel {
+  width: min(100%, 620px);
+  max-height: calc(100vh - 36px);
+  overflow-y: auto;
+  padding: 25px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 24px 80px #0003;
+}
+
+.checkout-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 22px;
+}
+
+.checkout-heading h2 {
+  margin: 7px 0 0;
+  color: #183b29;
+  font-size: 25px;
+}
+
+.checkout-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.checkout-form label {
+  color: #244832;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.checkout-form textarea {
+  width: 100%;
+  padding: 13px;
+  color: #183b29;
+  background: #fbfdf9;
+  border: 1px solid #dce7d7;
+  border-radius: 9px;
+  font: inherit;
+  resize: vertical;
+}
+
+.checkout-form textarea:focus {
+  outline: 2px solid #b8d9ad;
+  border-color: #398044;
+}
+
+.checkout-customer,
+.checkout-summary,
+.payment-choice {
+  padding: 15px;
+  background: #f5f8f2;
+  border: 1px solid #e3ecdf;
+  border-radius: 12px;
+}
+
+.checkout-customer h3,
+.checkout-summary h3 {
+  margin: 0 0 10px;
+  color: #183b29;
+}
+
+.checkout-customer p {
+  margin: 4px 0;
+  font-size: 13px;
+}
+
+.checkout-summary-row,
+.checkout-grand-total {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid #e4ebdf;
+  font-size: 13px;
+}
+
+.checkout-grand-total {
+  margin-top: 5px;
+  border: 0;
+  color: #14532d;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.payment-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.payment-choice span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #14532d;
+  font-weight: 800;
+}
+
+.payment-choice small {
+  color: #647568;
+  line-height: 1.5;
+}
+
+.checkout-error {
+  padding: 11px;
+  color: #a32626;
+  background: #fff0ed;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.order-success {
+  padding: 18px 5px;
+  text-align: center;
+}
+
+.order-success > svg {
+  color: #21834b;
+}
+
+.order-success h3 {
+  color: #183b29;
+  font-size: 23px;
+}
+
+.order-success p {
+  color: #647568;
+  line-height: 1.6;
+}
+
+.order-number {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 20px 0;
+  padding: 18px;
+  background: #edf7e8;
+  border: 1px dashed #8bb77a;
+  border-radius: 12px;
+}
+
+.order-number small {
+  color: #647568;
+  font-weight: 700;
+}
+
+.order-number strong {
+  color: #14532d;
+  font-size: 23px;
+  letter-spacing: 1px;
+}
+
+@media(max-width: 650px) {
+  .checkout-panel {
+    padding: 18px;
+    border-radius: 15px;
+  }
+
+  .checkout-heading h2 {
+    font-size: 21px;
+  }
+
+  .header-whatsapp {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+
+/* JaiGrow new homepage banners and farmer message */
+.hero-banner,
+.bottom-promo-banner {
+  width: 100%;
+  overflow: hidden;
+  background: #edf5e9;
+}
+
+.hero-banner a {
+  display: block;
+  width: 100%;
+}
+
+.hero-banner img,
+.bottom-promo-banner img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 620px;
+  object-fit: cover;
+  object-position: center;
+}
+
+.bottom-promo-banner {
+  margin-top: 35px;
+}
+
+.farmer-motivation {
+  padding: 65px 7%;
+  text-align: center;
+  background: linear-gradient(135deg, #eaf5df, #fff9e9);
+  color: #173d27;
+}
+
+.farmer-motivation .eyebrow {
+  color: #398044;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.farmer-motivation h2 {
+  margin: 15px 0;
+  font-size: clamp(27px, 4vw, 42px);
+  font-weight: 800;
+}
+
+.farmer-motivation p {
+  max-width: 760px;
+  margin: 0 auto 18px;
+  color: #526b55;
+  line-height: 1.9;
+  font-size: 17px;
+}
+
+.farmer-motivation strong {
+  display: block;
+  color: #26713a;
+  line-height: 1.8;
+}
+
+.header-whatsapp {
+  border: 0;
+  cursor: pointer;
+}
+
+@media (max-width: 650px) {
+  .hero-banner img,
+  .bottom-promo-banner img {
+    max-height: none;
+    width: 100%;
+    object-fit: contain;
+  }
+
+  .bottom-promo-banner {
+    margin-top: 22px;
+  }
+
+  .farmer-motivation {
+    padding: 42px 6%;
+  }
+
+  .farmer-motivation p {
+    font-size: 15px;
+  }
+}
+
+
+/* JaiGrow clickable shop location */
+.shop-location-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 10px 0 14px;
+  padding: 9px 13px;
+  border: 1px solid #c9dfc5;
+  border-radius: 30px;
+  background: #f0f8ed;
+  color: #17652e;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform .2s ease, background .2s ease;
+}
+.shop-location-link span:first-child {
+  font-size: 17px;
+}
+.shop-location-link:hover {
+  background: #e0f1dc;
+  transform: translateY(-2px);
+}
+@media (max-width: 650px) {
+  .shop-location-link {
+    min-height: 42px;
+    font-size: 13px;
+  }
+}

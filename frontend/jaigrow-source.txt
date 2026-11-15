@@ -1,0 +1,335 @@
+===== APP JSX =====
+import { useEffect, useMemo, useState } from 'react'
+import axios from 'axios'
+import {
+  ShoppingCart, Search, Heart, Menu, X, Sprout, Truck,
+  ShieldCheck, Headphones, ArrowRight, Plus, Minus,
+  Trash2, MessageCircle, Leaf, PackageCheck
+} from 'lucide-react'
+
+const categories = ['All', 'Fertilizers', 'Seeds', 'Crop Care', 'Organic', 'Tools']
+const money = n => '?' + Number(n).toLocaleString('en-IN')
+
+function App() {
+  const [category, setCategory] = useState('All')
+  const [search, setSearch] = useState('')
+  const [cart, setCart] = useState([])
+  const [wishlist, setWishlist] = useState([])
+  const [language, setLanguage] = useState('EN')
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [cartOpen, setCartOpen] = useState(false)
+  const [loginOpen, setLoginOpen] = useState(false)
+  const [products, setProducts] = useState([])
+  const [loadingProducts, setLoadingProducts] = useState(true)
+  const [productError, setProductError] = useState('')
+
+  useEffect(() => {
+    let active = true
+
+    const loadProducts = async () => {
+      setLoadingProducts(true)
+      setProductError('')
+
+      try {
+        const response = await axios.get('http://127.0.0.1:5000/api/products')
+        const rows = Array.isArray(response.data?.products)
+          ? response.data.products
+          : []
+
+        const normalized = rows.map(product => {
+          const variants = Array.isArray(product.variants) ? product.variants : []
+          const variant = variants.find(v => v.isActive !== false) || variants[0] || null
+          const rawPrice = variant?.price
+          const price = rawPrice === null || rawPrice === undefined
+            ? null
+            : Number(rawPrice)
+
+          return {
+            id: product._id,
+            variantId: variant?._id || null,
+            name: product.name || 'Unnamed product',
+            category: product.category || 'Other',
+            pack: variant?.packSize || 'Pack size on enquiry',
+            price: price !== null && Number.isFinite(price) ? price : null,
+            priceNote: price !== null && Number.isFinite(price)
+              ? 'Price set by JaiGrow'
+              : 'Get current price',
+            image: product.images?.[0] || 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800',
+            description: product.description || 'Contact JaiGrow for product details.'
+          }
+        })
+
+        if (active) setProducts(normalized)
+      } catch (error) {
+        if (active) {
+          setProductError(
+            error.response?.data?.message ||
+            'Products could not load. Please check the backend server.'
+          )
+        }
+      } finally {
+        if (active) setLoadingProducts(false)
+      }
+    }
+
+    loadProducts()
+    return () => { active = false }
+  }, [])
+
+  const filteredProducts = useMemo(() => products.filter(p =>
+    (category === 'All' || p.category === category) &&
+    (p.name + ' ' + p.category + ' ' + p.pack).toLowerCase().includes(search.toLowerCase())
+  ), [category, search])
+
+  const addToCart = product => {
+    setCart(old => {
+      const found = old.find(item => item.id === product.id)
+      return found
+        ? old.map(item => item.id === product.id ? {...item, qty: item.qty + 1} : item)
+        : [...old, {...product, qty: 1}]
+    })
+    setCartOpen(true)
+  }
+
+  const changeQty = (id, amount) => setCart(old =>
+    old.map(item => item.id === id ? {...item, qty: item.qty + amount} : item)
+      .filter(item => item.qty > 0)
+  )
+
+  const removeItem = id => setCart(old => old.filter(item => item.id !== id))
+  const cartCount = cart.reduce((sum, item) => sum + item.qty, 0)
+  const total = cart.reduce((sum, item) => sum + (item.price || 0) * item.qty, 0)
+  const enquiryItems = cart.filter(item => item.price === null)
+
+  const sendWhatsAppOrder = () => {
+    const lines = cart.map(item =>
+      `${item.name} (${item.pack}) x ${item.qty} — ${item.price === null ? 'Price on enquiry' : money(item.price * item.qty)}`
+    ).join('\n')
+    const message = `Namaste JaiGrow! I want to enquire about these products:\n\n${lines}\n\nIndicative subtotal: ${money(total)}\nPlease confirm final prices, stock and delivery charges.`
+    window.open(`https://wa.me/919839532365?text=${encodeURIComponent(message)}`, '_blank')
+  }
+
+  return (
+    <div className="site">
+      <div className="announcement">? &nbsp; JAI GROW · HAR KHET KI TARAKKI &nbsp; ?</div>
+
+      <header className="header">
+        <a className="brand" href="#home">
+          <span className="brand-icon"><Sprout size={27}/></span>
+          <span>JaiGrow<small>AGRICULTURE STORE</small></span>
+        </a>
+        <nav className={menuOpen ? 'nav open' : 'nav'}>
+          <a href="#home" onClick={() => setMenuOpen(false)}>Home</a>
+          <a href="#categories" onClick={() => setMenuOpen(false)}>Categories</a>
+          <a href="#products" onClick={() => setMenuOpen(false)}>Products</a>
+          <a href="#about" onClick={() => setMenuOpen(false)}>About</a>
+          <a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
+        </nav>
+        <div className="header-actions">
+          <button className="language" onClick={() => setLanguage(language === 'EN' ? 'HI' : 'EN')}>{language}</button>
+          <button className="login-button" onClick={() => setLoginOpen(true)}>Login</button>
+          <button className="cart-button" onClick={() => setCartOpen(true)}>
+            <ShoppingCart size={20}/><span>{cartCount}</span>
+          </button>
+          <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <X/> : <Menu/>}
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section className="hero" id="home">
+          <div className="hero-content">
+            <span className="eyebrow"><Leaf size={15}/> GROW BETTER. GROW TOGETHER.</span>
+            <h1>Har Khet Ki<br/><em>Tar????</em></h1>
+            <p>Your trusted destination for agricultural essentials, quality products and farmer-focused service.</p>
+            <a className="primary-button" href="#products">Explore Products <ArrowRight size={18}/></a>
+            <div className="hero-note">Supporting farmers. Nurturing growth.</div>
+          </div>
+          <div className="hero-image">
+            <div className="image-label"><Sprout/><span>Growing a greener future</span></div>
+          </div>
+        </section>
+
+        <section className="benefits">
+          <div><Truck/><span><b>Uttar Pradesh Delivery</b><small>Delivery across Uttar Pradesh</small></span></div>
+          <div><ShieldCheck/><span><b>Quality Focused</b><small>Product details and enquiry support</small></span></div>
+          <div><Headphones/><span><b>Personal Support</b><small>Talk directly to our team</small></span></div>
+        </section>
+
+        <section className="section" id="categories">
+          <div className="section-heading">
+            <span className="eyebrow">SHOP BY CATEGORY</span>
+            <h2>Everything your farm needs</h2>
+            <p>Explore agricultural essentials in one place.</p>
+          </div>
+          <div className="category-grid">
+            {categories.slice(1).map((item, i) =>
+              <button key={item} className="category-card" onClick={() => {
+                setCategory(item)
+                document.getElementById('products').scrollIntoView({behavior:'smooth'})
+              }}>
+                <span className="category-number">0{i+1}</span>
+                <h3>{item}</h3><span className="category-arrow"><ArrowRight/></span>
+              </button>
+            )}
+          </div>
+        </section>
+
+        <section className="section products-section" id="products">
+          <div className="section-heading">
+            <span className="eyebrow">THE JAI GROW COLLECTION</span>
+            <h2>Products for every growing season</h2>
+            <p>Explore products, compare pack sizes and add items to your enquiry cart.</p>
+          </div>
+
+          <div className="product-tools">
+            <div className="search-box"><Search size={18}/>
+              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name, category or pack size..."/>
+            </div>
+            <div className="filters">
+              {categories.map(c =>
+                <button key={c} className={category === c ? 'filter active' : 'filter'} onClick={() => setCategory(c)}>{c}</button>
+              )}
+            </div>
+          </div>
+
+          <div className="product-grid">
+            {filteredProducts.map(p =>
+              <article className="product-card" key={p.id}>
+                <div className="product-image">
+                  <img src={p.image} alt={p.name} loading="lazy"
+                    onError={e => {e.currentTarget.src='https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800'}}/>
+                  <span className="product-tag">{p.category}</span>
+                  <button className="wishlist" aria-label="Add to wishlist" onClick={() =>
+                    setWishlist(old => old.includes(p.id) ? old.filter(x => x !== p.id) : [...old, p.id])
+                  }><Heart size={19} fill={wishlist.includes(p.id) ? '#b87942' : 'none'} color={wishlist.includes(p.id) ? '#b87942' : '#173c2b'}/></button>
+                </div>
+                <div className="product-info">
+                  <small>{p.pack}</small>
+                  <h3>{p.name}</h3>
+                  <p>{p.description}</p>
+                  <div className="price-line">
+                    <b>{p.price === null ? 'Get Price' : money(p.price)}</b>
+                    <span>{p.priceNote}</span>
+                  </div>
+                  <button className="add-button" onClick={() => addToCart(p)}>
+                    <ShoppingCart size={16}/> Add to cart
+                  </button>
+                </div>
+              </article>
+            )}
+            {loadingProducts && <p>Loading JaiGrow products...</p>}
+            {!loadingProducts && productError && <p>{productError}</p>}
+            {!loadingProducts && !productError && filteredProducts.length === 0 && (
+              <p>{search || category !== 'All'
+                ? 'No matching products found.'
+                : 'Products are being added to JaiGrow. Please check again soon.'}</p>
+            )}
+          </div>
+          <p className="price-disclaimer">Prices shown are reference estimates, not confirmed JaiGrow selling prices. Final price, brand, stock and delivery charges will be confirmed by the shop. Product images are illustrative.</p>
+        </section>
+
+        <section className="about-section" id="about">
+          <div className="about-mark"><Sprout size={55}/></div>
+          <div><span className="eyebrow">ROOTED IN TRUST</span>
+            <h2>Growing together with our farmers.</h2>
+            <p>JaiGrow helps farmers discover agricultural essentials with helpful service and a convenient enquiry experience.</p>
+            <a href="#contact" className="text-link">Get in touch <ArrowRight size={17}/></a>
+          </div>
+        </section>
+
+        <section className="contact-section" id="contact">
+          <span className="eyebrow">WE'RE HERE TO HELP</span>
+          <h2>Let's grow something great.</h2>
+          <p>Have a product enquiry or need assistance? Talk to our team.</p>
+          <a className="primary-button" href="https://wa.me/919839532365" target="_blank" rel="noreferrer">
+            <MessageCircle size={18}/> Chat on WhatsApp <ArrowRight size={18}/>
+          </a>
+          <p className="contact-phone">9839532365 · 9919136715</p>
+          <p>Bibiganj Bazaar, Main Market, Near Union Bank, Jaunpur, Uttar Pradesh – 222101</p>
+          <p>Open daily · 9 AM – 8 PM</p>
+        </section>
+      </main>
+
+      <footer className="footer">
+        <a className="brand" href="#home"><span className="brand-icon"><Sprout/></span><span>JaiGrow<small>AGRICULTURE STORE</small></span></a>
+        <p>?? ??? ?? ??????</p>
+        <small>© {new Date().getFullYear()} JaiGrow. All rights reserved.</small>
+      </footer>
+
+      <button className="floating-whatsapp" onClick={() => window.open('https://wa.me/919839532365','_blank')}>
+        <MessageCircle size={18}/> WhatsApp
+      </button>
+
+      {loginOpen && <Login onClose={() => setLoginOpen(false)} />}
+      {cartOpen && <div className="drawer-backdrop" onClick={() => setCartOpen(false)}>
+        <aside className="cart-drawer" onClick={e => e.stopPropagation()}>
+          <div className="drawer-head">
+            <div><span className="eyebrow">YOUR SELECTION</span><h2>Shopping Cart ({cartCount})</h2></div>
+            <button className="close-drawer" onClick={() => setCartOpen(false)}><X/></button>
+          </div>
+
+          {cart.length === 0 ? <div className="empty-cart">
+            <ShoppingCart size={45}/><h3>Your cart is empty</h3>
+            <p>Explore products and add items to your cart.</p>
+            <button className="primary-button" onClick={() => {setCartOpen(false);document.getElementById('products').scrollIntoView({behavior:'smooth'})}}>Explore Products</button>
+          </div> : <>
+            <div className="cart-items">
+              {cart.map(item => <div className="cart-item" key={item.id}>
+                <img src={item.image} alt={item.name}/>
+                <div className="cart-item-info">
+                  <b>{item.name}</b><small>{item.pack}</small>
+                  <strong>{item.price === null ? 'Price on enquiry' : money(item.price)}</strong>
+                  <div className="quantity">
+                    <button onClick={() => changeQty(item.id,-1)}><Minus size={14}/></button>
+                    <span>{item.qty}</span>
+                    <button onClick={() => changeQty(item.id,1)}><Plus size={14}/></button>
+                    <button className="remove-item" onClick={() => removeItem(item.id)}><Trash2 size={15}/></button>
+                  </div>
+                </div>
+              </div>)}
+            </div>
+            <div className="cart-total">
+              <div><span>Indicative subtotal</span><b>{money(total)}</b></div>
+              {enquiryItems.length > 0 && <p>{enquiryItems.length} item(s) need price confirmation.</p>}
+              <small>Delivery charges and final prices are confirmed by JaiGrow before order acceptance.</small>
+              <button className="checkout-button" onClick={sendWhatsAppOrder}><MessageCircle size={18}/> Send enquiry on WhatsApp</button>
+              <button className="continue-button" onClick={() => setCartOpen(false)}>Continue shopping</button>
+              <button className="clear-cart" onClick={() => setCart([])}>Clear cart</button>
+            </div>
+          </>}
+        </aside>
+      </div>}
+    </div>
+  )
+}
+
+export default App
+
+
+
+
+
+===== INDEX CSS =====
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap');
+@import "tailwindcss";
+
+:root{font-family:'DM Sans',sans-serif;color:#173c2b;background:#fbfcf8;font-synthesis:none;text-rendering:optimizeLegibility}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-width:320px}button,input{font:inherit}button,a{cursor:pointer}a{text-decoration:none;color:inherit}button{transition:.2s}
+.announcement{background:#173c2b;color:#f5ead0;text-align:center;padding:10px;font-size:10px;letter-spacing:2px}
+.header{height:82px;padding:0 7%;display:flex;align-items:center;justify-content:space-between;background:#fff;position:sticky;top:0;z-index:20;border-bottom:1px solid #edf0e8}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Playfair Display',serif;font-size:25px;font-weight:700;color:#173c2b}.brand small{display:block;font:9px 'DM Sans';letter-spacing:2px;color:#a17b48}.brand-icon{background:#edf3e9;border-radius:50%;padding:10px;display:grid}
+.nav{display:flex;gap:30px;font-size:13px;color:#526257}.nav a:hover,.text-link:hover{color:#ad8250}.header-actions{display:flex;align-items:center;gap:16px}.language{border:1px solid #e4e9df;background:white;padding:10px 13px;color:#173c2b}.cart-button{display:flex;align-items:center;gap:7px;border:0;background:none;color:#173c2b}.cart-button span{background:#173c2b;color:white;border-radius:50%;font-size:10px;padding:4px 7px}.menu-button{display:none;border:0;background:white}
+.hero{min-height:570px;background:#f0f3e9;display:grid;grid-template-columns:1fr 1fr;padding:65px 8%;align-items:center;gap:50px}.hero-content{max-width:520px}.eyebrow{font-size:10px;letter-spacing:2.5px;font-weight:700;color:#a17b48;display:inline-flex;align-items:center;gap:8px}.hero h1{font:clamp(58px,7vw,90px)/1.03 'Playfair Display',serif;margin:25px 0;color:#173c2b}.hero h1 em{color:#a17b48;font-weight:500}.hero-content>p,.section-heading p,.about-section p,.contact-section p{color:#718074;line-height:1.8;font-size:14px}.primary-button{display:inline-flex;align-items:center;justify-content:center;gap:12px;background:#173c2b;color:white;padding:15px 22px;margin-top:20px;font-size:12px;letter-spacing:.5px;border:0}.primary-button:hover,.checkout-button:hover{background:#a17b48;transform:translateY(-2px)}.hero-note{font-size:11px;color:#849184;margin-top:24px}.hero-image{height:430px;background:linear-gradient(0deg,rgba(15,45,29,.1),transparent),url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200') center/cover;position:relative}.image-label{position:absolute;bottom:20px;left:20px;background:white;padding:13px 18px;display:flex;align-items:center;gap:10px;font-size:12px}
+.benefits{display:grid;grid-template-columns:repeat(3,1fr);padding:30px 10%;background:white;border-bottom:1px solid #edf0e8}.benefits>div{display:flex;align-items:center;justify-content:center;gap:14px;border-right:1px solid #edf0e8}.benefits>div:last-child{border:0}.benefits svg{color:#a17b48;width:25px}.benefits b,.benefits small{display:block}.benefits b{font-size:12px}.benefits small{font-size:10px;color:#8b968b;margin-top:4px}
+.section{padding:85px 8%}.section-heading{text-align:center;margin-bottom:38px}.section-heading h2,.about-section h2,.contact-section h2{font:clamp(30px,4vw,43px) 'Playfair Display',serif;color:#173c2b;margin:13px 0}.category-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.category-card{background:#f0f3e9;border:0;text-align:left;padding:25px 18px;min-height:150px;color:#173c2b}.category-card:hover{background:#173c2b;color:white;transform:translateY(-4px)}.category-number{font-size:10px;color:#a17b48}.category-card h3{font:20px 'Playfair Display',serif;margin-top:30px}.category-arrow{float:right}
+.products-section{background:#f5f6f0}.product-tools{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:28px;flex-wrap:wrap}.search-box{display:flex;align-items:center;gap:9px;background:white;border:1px solid #e7eadf;padding:10px 14px;min-width:260px}.search-box input{border:0;outline:0;width:100%;font-size:12px}.filters{display:flex;gap:7px;flex-wrap:wrap}.filter{background:white;border:1px solid #e5e9df;padding:9px 12px;font-size:11px;color:#58675b}.filter.active{background:#173c2b;color:white;border-color:#173c2b}.product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.product-card{background:white;box-shadow:0 5px 25px #1b3b2510;transition:.25s}.product-card:hover{transform:translateY(-5px);box-shadow:0 12px 30px #1b3b2518}.product-image{height:230px;position:relative;overflow:hidden;background:#e9eee5}.product-image img{width:100%;height:100%;object-fit:cover;transition:.4s}.product-card:hover img{transform:scale(1.05)}.product-tag{position:absolute;left:13px;top:13px;background:#fff;padding:7px 10px;font-size:9px;letter-spacing:1px;text-transform:uppercase}.wishlist{position:absolute;right:12px;top:12px;border:0;background:white;border-radius:50%;padding:9px;display:grid}.product-info{padding:20px}.product-info>small{color:#a17b48;text-transform:uppercase;letter-spacing:1px;font-size:9px}.product-info h3{font:21px 'Playfair Display',serif;margin:8px 0}.product-info p{font-size:11px;color:#849084;line-height:1.6;min-height:35px}.price-line{display:flex;align-items:center;justify-content:space-between;gap:5px;margin:15px 0 12px}.price-line b{font-size:19px;color:#173c2b}.price-line span{font-size:9px;color:#9a8a70;text-align:right}.add-button{width:100%;border:0;background:#173c2b;color:white;padding:12px;display:flex;align-items:center;justify-content:center;gap:9px;font-size:12px}.add-button:hover{background:#a17b48}.price-disclaimer{text-align:center;font-size:10px;color:#899487;line-height:1.7;margin-top:25px}
+.about-section{padding:85px 13%;display:grid;grid-template-columns:180px 1fr;gap:40px;align-items:center}.about-mark{width:140px;height:140px;border-radius:50%;background:#edf3e9;display:grid;place-items:center;color:#a17b48}.about-section p{max-width:650px}.text-link{display:inline-flex;align-items:center;gap:10px;color:#a17b48;font-size:12px;font-weight:700;margin-top:10px}.contact-section{text-align:center;padding:75px 20px;background:#edf2e8}.contact-section p{margin:8px auto;max-width:650px}.contact-phone{font-weight:700;color:#173c2b!important;margin-top:25px!important}.footer{padding:30px 8%;display:flex;align-items:center;justify-content:space-between;background:#173c2b;color:white}.footer .brand{color:white}.footer .brand small{color:#d6bd91}.footer p{font-family:'Playfair Display';color:#e4d6bb}.footer>small{font-size:10px;color:#c2cbbf}
+.floating-whatsapp{position:fixed;right:20px;bottom:20px;background:#26784c;color:white;padding:13px 18px;border:0;border-radius:30px;font-size:12px;z-index:15;box-shadow:0 5px 20px #0002;display:flex;align-items:center;gap:8px}
+.drawer-backdrop{position:fixed;inset:0;background:#10271db3;z-index:50;display:flex;justify-content:flex-end}.cart-drawer{width:min(470px,100%);height:100%;background:#fff;display:flex;flex-direction:column;box-shadow:-10px 0 40px #0002;animation:slideIn .25s ease}.drawer-head{padding:25px 25px 18px;border-bottom:1px solid #edf0e8;display:flex;align-items:center;justify-content:space-between}.drawer-head h2{font:27px 'Playfair Display',serif;margin:7px 0 0}.close-drawer{border:0;background:#f1f4ed;padding:9px;display:grid}.cart-items{padding:10px 24px;overflow:auto;flex:1}.cart-item{display:flex;gap:14px;padding:17px 0;border-bottom:1px solid #edf0e8}.cart-item img{width:90px;height:90px;object-fit:cover;background:#eef1e9}.cart-item-info{flex:1;display:flex;flex-direction:column;gap:5px}.cart-item-info b{font:16px 'Playfair Display',serif}.cart-item-info small{color:#8b968b;font-size:10px}.cart-item-info strong{font-size:13px;color:#a17b48}.quantity{display:flex;align-items:center;gap:12px;margin-top:5px}.quantity button{border:1px solid #e2e8df;background:white;padding:5px;display:grid}.quantity span{font-size:12px}.quantity .remove-item{margin-left:auto;color:#a34d3c;border:0}.cart-total{padding:20px 25px 25px;border-top:1px solid #e9eee5;box-shadow:0 -5px 20px #00000008}.cart-total>div{display:flex;justify-content:space-between;font-size:14px}.cart-total>div b{font-size:20px}.cart-total p{font-size:11px;color:#a17b48}.cart-total>small{display:block;color:#8b968b;font-size:10px;line-height:1.6;margin:10px 0 15px}.checkout-button{width:100%;background:#173c2b;color:white;border:0;padding:14px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:12px}.continue-button,.clear-cart{width:100%;border:0;background:white;padding:11px;color:#526257;font-size:11px}.clear-cart{color:#a34d3c}.empty-cart{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;color:#829084}.empty-cart h3{font:25px 'Playfair Display',serif;color:#173c2b}.empty-cart p{font-size:12px}
+@keyframes slideIn{from{transform:translateX(30px);opacity:.5}to{transform:translateX(0);opacity:1}}
+@media(max-width:900px){.nav{gap:15px}.hero{padding:50px 6%;gap:25px}.category-grid{grid-template-columns:repeat(3,1fr)}.product-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){.header{height:70px;padding:0 5%}.nav{display:none;position:absolute;top:70px;left:0;right:0;background:white;padding:20px;flex-direction:column;box-shadow:0 10px 20px #0001}.nav.open{display:flex}.menu-button{display:grid}.hero{grid-template-columns:1fr;padding:45px 7%}.hero-image{height:270px}.benefits{grid-template-columns:1fr;gap:20px;padding:25px}.benefits>div{justify-content:flex-start;border:0}.section{padding:60px 6%}.category-grid{grid-template-columns:repeat(2,1fr)}.category-card{min-height:125px}.product-grid{grid-template-columns:1fr 1fr;gap:10px}.product-image{height:155px}.product-info{padding:13px}.product-info h3{font-size:16px}.price-line{align-items:flex-start;flex-direction:column}.price-line span{text-align:left}.about-section{padding:60px 8%;grid-template-columns:1fr;gap:20px}.about-mark{width:90px;height:90px}.footer{flex-direction:column;gap:12px;text-align:center}.filters{gap:5px}.filter{padding:8px}.product-tools{align-items:stretch}.search-box{width:100%}.drawer-head{padding:20px}.cart-items{padding:8px 18px}.cart-total{padding:16px 18px 20px}}
+
+.login-button{border:1px solid #dfe6db;background:white;color:#173c2b;padding:9px 16px;font-size:12px}.login-button:hover{background:#173c2b;color:white}

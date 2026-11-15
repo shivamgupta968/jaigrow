@@ -1,0 +1,16 @@
+﻿node_modules/
+**/node_modules/
+.env
+.env.*
+!.env.example
+dist/
+build/
+.vercel/
+.DS_Store
+*.log
+*.backup-*
+*.bak
+backup-*/
+*-backup-*/
+**/backup-*/
+**/*-backup-*/
